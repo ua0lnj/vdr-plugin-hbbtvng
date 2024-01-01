@@ -10,8 +10,11 @@
 #include <vdr/menuitems.h>
 #include <vdr/tools.h>
 #include <vdr/device.h>
+#include <vdr/plugin.h>
+#include <string>
+#include <cstring>
 
-#define BROWSER "/usr/bin/firefox"
+#define BROWSER "/usr/bin/youtube"
 #define DEBUG
 
 #ifdef DEBUG
@@ -19,7 +22,7 @@
 #else
 #       define DSYSLOG(x...)    
 #endif
-
+using namespace std;
 
 static const char *CtrlCodes[8] =
 {  "Autostart",
@@ -78,9 +81,28 @@ eOSState cHbbtvMenu::ProcessKey(eKeys Key)
                         if (url) 
                         {
                            DSYSLOG("Menuitem: %d %s", Current(), *cString::sprintf("DISPLAY=:0 %s %s%s", BROWSER, *url->UrlBase(),  *url->UrlLoc()));
-                           SystemExec(*cString::sprintf("DISPLAY=:0 %s %s%s", BROWSER, *url->UrlBase(),  *url->UrlLoc()), true);
+
+                           struct sPlayerArgs {
+                               string mMenuEntry;
+                               string mPlayerCommand;
+                               ePlayMode mPlayMode;
+                               bool mSlaveMode;
+                               bool mDeactivateRemotes;
+                               bool mBlockMenu;
+                           };
+
+                           sPlayerArgs pa;
+
+                           pa.mMenuEntry = "hbbtv browser";
+                           pa.mPlayerCommand = *cString::sprintf("DISPLAY=:0 %s %s%s", BROWSER, *url->UrlBase(),  *url->UrlLoc());
+                           pa.mPlayMode = pmExtern_THIS_SHOULD_BE_AVOIDED;
+                           pa.mSlaveMode = false;
+                           pa.mDeactivateRemotes = true;
+                           pa.mBlockMenu = false;
+
+                           cPluginManager::CallFirstService("Run External", &pa);
                         }
-                        return osContinue;
+                        return osEnd;
                      }
        case kRed:    Display();
                      break; 
@@ -91,12 +113,10 @@ eOSState cHbbtvMenu::ProcessKey(eKeys Key)
                      break;
        case kDown:   cDevice::SwitchChannel(-1);
                      break;
-                     
        default: break;
       }
+      Display();
    }
 
    return state;
 }
-
-  

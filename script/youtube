@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# run youtube
+
+#. /etc/rc.config
+
+if [ "$1" = "-k" ]; then
+	kill $(ps | grep -v grep | grep www.youtube.com | cut -b 1-5)
+	exit
+fi
+
+width=1920
+height=1080
+
+lg=`echo $LANG|cut -f 1 -d '_'`
+LG=`echo $LANG|cut -f 2 -d '_'|cut -f 1 -d '.'`
+
+URL="https://www.youtube.com/tv?gl=$LG&hl=$lg"
+YT=0
+
+agent="SMART-TV; Tizen 4.0"
+
+if [ -n "$1" ]; then
+	URL=$1
+#	agent="Mozilla/5.0 (Web0S; Linux/SmartTV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.122 Safari/537.36 HbbTV/1.4.1 (+DRM; LGE; 43UJ701V-ZC; WEBOS3.5 06.00.15; W3_K3LP; W3_K3LP;)"
+	agent="HbbTV/1.4.1"
+	YT=1
+fi
+
+echo $URL
+
+#if [ -e /run/lirc/lircd ]; then
+	pkill -9 irxevent
+	DISPLAY=:0 irxevent /etc/lircrc.chromium &
+#	irx=$!
+#fi
+
+#alsactl -f /tmp/asound.state.$$ store
+#amixer -q set Master $YOUTUBE_STARTUP_VOLUME% unmute
+export GOOGLE_API_KEY="no"
+export GOOGLE_DEFAULT_CLIENT_ID="no"
+export GOOGLE_DEFAULT_CLIENT_SECRET="no"
+#sync; echo 1 > /proc/sys/vm/drop_caches
+
+DISPLAY=:0 XDG_RUNTIME_DIR= chromium-browser --load-extension=/usr/lib/chromium-browser/extensions/NotYetAV1,/usr/lib/chromium-browser/extensions/HybridTvViewer --disable-infobars --no-sandbox --noerrdialogs --window-position=0,0 --window-size=$width,$height --start-fullscreen --alsa-output-device=hdmi:CARD=NVidia,DEV=0 --user-agent="$agent" --use-cmd-decoder=validating --ignore-gpu-blocklist --enable-gpu-rasterization --enable-oop-rasterization --enable-zero-copy --enable-gpu-compositing --enable-accelerated-2d-canvas --process-per-site --try-supported-channel-layouts --enable-features=VaapiVideoDecoder,VaapiVideoDecodeLinuxGL --enable-accelerated-video-decode --force-wave-audio --kiosk $URL #?loader=blog'
+
+#alsactl -f /tmp/asound.state.$$ restore
+#pkill -9 chromium
+pkill -9 irxevent
+
+exit 0
