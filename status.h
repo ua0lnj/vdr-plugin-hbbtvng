@@ -24,6 +24,7 @@ public:
    cHbbtvDeviceStatus();
    ~cHbbtvDeviceStatus();
    const int Sid(void) const { return sid; }
+   cDevice *GetDevice() {return device; }
 };
 
 extern cHbbtvDeviceStatus *HbbtvDeviceStatus;

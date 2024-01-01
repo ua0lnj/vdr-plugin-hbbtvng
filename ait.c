@@ -15,7 +15,7 @@
 
 #define PMT_SCAN_IDLE     60 //300    // seconds
 
-//#define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
 #       define DSYSLOG(x...)    dsyslog(x);
@@ -23,6 +23,7 @@
 #       define DSYSLOG(x...)    
 #endif
 
+const char *carousel_dir = "file:///var/cache/vdr/dsmcc/%s/";
 // --- cAIT ------------------------------------------------------------
 
 class cAIT : public SI::AIT
@@ -40,6 +41,7 @@ cAIT::cAIT(cHbbtvURLs *hbbtvURLs, const u_char *Data, u_short Pid)
    SI::AIT::Application aitApp;
    for (SI::Loop::Iterator it; applicationLoop.getNext(aitApp, it); )
    {
+      int carousel = 0;
       DSYSLOG(" [hbbtv] -----------SI::AIT::Application Pid=0x%04x ---------------\n", Pid);
       DSYSLOG(" [hbbtv] SI::AIT::Application ApplicationId=0x%04x ControlCode=0x%04x",aitApp.getApplicationId(), aitApp.getControlCode());
 
@@ -56,6 +58,7 @@ cAIT::cAIT(cHbbtvURLs *hbbtvURLs, const u_char *Data, u_short Pid)
       SI::Descriptor *d;
       for (SI::Loop::Iterator it2; (d = aitApp.applicationDescriptors.getNext(it2)); ) 
       {
+         DSYSLOG("   [hbbtv] aplicationDescriptor=%x\n", d->getDescriptorTag());
          switch (d->getDescriptorTag()) 
          {
             case SI::MHP_ApplicationDescriptorTag:
@@ -90,6 +93,7 @@ cAIT::cAIT(cHbbtvURLs *hbbtvURLs, const u_char *Data, u_short Pid)
                    switch (tpd->getProtocolId()) {
                       case SI::MHP_TransportProtocolDescriptor::ObjectCarousel:
                          DSYSLOG("   [hbbtv] SI::MHP_TransportProtocolDescriptor ObjectCarousel isRemote=0x%04x ComponentTag=0x%04x\n", tpd->isRemote(), tpd->getComponentTag());
+                         carousel = 1;
                          break;
 
                       case SI::MHP_TransportProtocolDescriptor::HTTPoverInteractionChannel:
@@ -101,6 +105,10 @@ cAIT::cAIT(cHbbtvURLs *hbbtvURLs, const u_char *Data, u_short Pid)
                             if (Utf8StrLen(URLExtBuffer))
                                isyslog("   [hbbtv] SI::MHP_ApplicationNameDescriptor Extension=\"%s\" \n", URLExtBuffer);
                          }
+                         break;
+
+                      case SI::MHP_TransportProtocolDescriptor::IPviaDVB:
+                         DSYSLOG("   [hbbtv] SI::MHP_TransportProtocolDescriptor IPviaDVB not implemented");
                          break;
 
                       default:
@@ -121,6 +129,13 @@ cAIT::cAIT(cHbbtvURLs *hbbtvURLs, const u_char *Data, u_short Pid)
                break;   
          }
          delete d;
+      }
+      if (carousel) {
+         LOCK_CHANNELS_READ
+         cString base = Channels->GetByNumber(HbbtvDeviceStatus->GetDevice()->CurrentChannel())->GetChannelID().ToString();
+
+         sprintf (URLBaseBuffer, carousel_dir, (const char*)base);
+         DSYSLOG("   [hbbtv] Carousel file: %s\n",URLBaseBuffer);
       }
       hbbtvURLs->AddSortedUniqe(new cHbbtvURL(aitApp.getApplicationId(), aitApp.getControlCode(), ApplPriority, 
                                 nameBuffer, URLBaseBuffer, URLLocBuffer, URLExtBuffer));
@@ -245,6 +260,46 @@ void cAitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                         }
                         break;
                      }  
+
+                     default:
+                        break;
+                     
+                  }
+                  delete d;
+               }
+            }
+
+            if (stream.getStreamType() == 0x0b) 
+            {
+               SI::Descriptor *d;
+               for (SI::Loop::Iterator it2; (d = stream.streamDescriptors.getNext(it2, SI::CarouselIdentifierDescriptorTag)); )
+               {
+                  switch (d->getDescriptorTag())
+                  {
+                     case SI::CarouselIdentifierDescriptorTag:
+                     {
+                        DSYSLOG("[hbbtv] -----------SI::CarouselIdentifierDescriptorTag Len %d Pid 0x%04x ---------------", d->getLength(), stream.getPid());
+                        SI::CarouselIdentifierDescriptor *cr = (SI::CarouselIdentifierDescriptor *) d;
+                        DSYSLOG("   [hbbtv] SI::CarouselIdentifierDescriptor CarouselId=0x%04x FormatId=0x%04x\n", cr->getCarouselId(), cr->getFormatId());
+                        break;
+                     }
+                     default:
+                        break;
+                     
+                  }
+                  delete d;
+               }
+               for (SI::Loop::Iterator it2; (d = stream.streamDescriptors.getNext(it2, SI::StreamIdentifierDescriptorTag)); )
+               {
+                  switch (d->getDescriptorTag())
+                  {
+                     case SI::StreamIdentifierDescriptorTag:
+                     {
+                        DSYSLOG("[hbbtv] -----------SI::StreamIdentifierDescriptorTag Len %d Pid 0x%04x ---------------", d->getLength(), stream.getPid());
+                        SI::StreamIdentifierDescriptor *st = (SI::StreamIdentifierDescriptor *) d;
+                        DSYSLOG("   [hbbtv] SI::StreamIdentifierDescriptor ComponentTag=0x%04x\n", st->getComponentTag());
+                        break;
+                     }
                      default:
                         break;
                      
