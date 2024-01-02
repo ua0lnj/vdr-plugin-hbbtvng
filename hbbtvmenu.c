@@ -100,7 +100,9 @@ eOSState cHbbtvMenu::ProcessKey(eKeys Key)
                            pa.mDeactivateRemotes = true;
                            pa.mBlockMenu = false;
 
-                           cPluginManager::CallFirstService("Run External", &pa);
+                           if (!cPluginManager::CallFirstService("Run External", &pa)) {
+                               SystemExec(*cString::sprintf("DISPLAY=:0 %s %s%s", BROWSER, *url->UrlBase(),  *url->UrlLoc()), true);
+                           }
                         }
                         return osEnd;
                      }
