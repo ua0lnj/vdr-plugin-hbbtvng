@@ -9,6 +9,7 @@
 #include "ait.h"
 #include "hbbtvurl.h"
 #include "status.h"
+#include <vdr/plugin.h>
 #include <vdr/tools.h>
 #include <libsi/section.h>
 #include <libsi/descriptor.h>
@@ -133,6 +134,8 @@ cAIT::cAIT(cHbbtvURLs *hbbtvURLs, const u_char *Data, u_short Pid)
       if (carousel) {
          LOCK_CHANNELS_READ
          cString base = Channels->GetByNumber(HbbtvDeviceStatus->GetDevice()->CurrentChannel())->GetChannelID().ToString();
+
+         cPluginManager::CallFirstService("Scan dsmcc", NULL);
 
          sprintf (URLBaseBuffer, carousel_dir, (const char*)base);
          DSYSLOG("   [hbbtv] Carousel file: %s\n",URLBaseBuffer);
