@@ -132,13 +132,14 @@ cAIT::cAIT(cHbbtvURLs *hbbtvURLs, const u_char *Data, u_short Pid)
          delete d;
       }
       if (carousel) {
-         LOCK_CHANNELS_READ
-         cString base = Channels->GetByNumber(HbbtvDeviceStatus->GetDevice()->CurrentChannel())->GetChannelID().ToString();
-
-         cPluginManager::CallFirstService("Scan dsmcc", NULL);
-
-         sprintf (URLBaseBuffer, carousel_dir, (const char*)base);
-         DSYSLOG("   [hbbtv] Carousel file: %s\n",URLBaseBuffer);
+         //scan carousel objects with dsmcc plugin
+         if (cPluginManager::CallFirstService("Scan dsmcc", NULL)) {
+           LOCK_CHANNELS_READ
+           cString base = Channels->GetByNumber(HbbtvDeviceStatus->GetDevice()->CurrentChannel())->GetChannelID().ToString();
+           //add dsmcc plugin's cache directory with channel id to url
+           sprintf (URLBaseBuffer, carousel_dir, (const char*)base);
+           DSYSLOG("   [hbbtv] Carousel file: %s%s\n", URLBaseBuffer, URLLocBuffer);
+         }
       }
       hbbtvURLs->AddSortedUniqe(new cHbbtvURL(aitApp.getApplicationId(), aitApp.getControlCode(), ApplPriority, 
                                 nameBuffer, URLBaseBuffer, URLLocBuffer, URLExtBuffer));
