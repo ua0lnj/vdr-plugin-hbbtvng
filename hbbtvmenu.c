@@ -15,12 +15,11 @@
 #include <cstring>
 
 #define BROWSER "/usr/bin/youtube"
-#define DEBUG
 
 #ifdef DEBUG
 #       define DSYSLOG(x...)    dsyslog(x);
 #else
-#       define DSYSLOG(x...)    
+#       define DSYSLOG(x...)
 #endif
 using namespace std;
 

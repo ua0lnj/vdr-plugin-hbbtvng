@@ -16,12 +16,10 @@
 
 #define PMT_SCAN_IDLE     60 //300    // seconds
 
-#define DEBUG
-
 #ifdef DEBUG
 #       define DSYSLOG(x...)    dsyslog(x);
 #else
-#       define DSYSLOG(x...)    
+#       define DSYSLOG(x...)
 #endif
 
 const char *carousel_dir = "file:///var/cache/vdr/dsmcc/%s/";

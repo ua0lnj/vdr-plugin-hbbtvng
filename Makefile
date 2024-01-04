@@ -49,6 +49,8 @@ SOFILE = libvdr-$(PLUGIN).so
 
 INCLUDES +=
 
+#DEFINES += -DDEBUG
+
 DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
 
 ### The object files (add further files here):

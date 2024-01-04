@@ -10,8 +10,12 @@
 #include "libsi/si.h"
 #include "vdr/tools.h"
 #include "vdr/skins.h"
-#define DSYSLOG(x...)    dsyslog(x);
 
+#ifdef DEBUG
+#      define DSYSLOG(x...)    dsyslog(x);
+#else
+#      define DSYSLOG(x...)
+#endif
 // --- cHbbtvURL ---------------------------------------
 cHbbtvURL::cHbbtvURL(uchar ApplicationId, uchar ControlCode, uchar Priority, const char *Name, const char *UrlBase, const char *UrlLoc, const char *UrlExt)
 {
