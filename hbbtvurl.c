@@ -9,6 +9,7 @@
 #include "hbbtvurl.h"
 #include "libsi/si.h"
 #include "vdr/tools.h"
+#include "vdr/skins.h"
 #define DSYSLOG(x...)    dsyslog(x);
 
 // --- cHbbtvURL ---------------------------------------
@@ -59,6 +60,7 @@ bool cHbbtvURLs::AddSortedUniqe(cHbbtvURL *newUrl)
    if (!url)
    {
       hbbtvURLs.Add(newUrl);
+      Skins.Message(mtInfo, tr("Found HbbTV URL"), 5);
       return true;
    }
    
