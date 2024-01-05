@@ -12,7 +12,7 @@
 #include "hbbtvmenu.h"
 #include "status.h"
 
-static const char *VERSION        = "0.3.1";
+static const char *VERSION        = "0.3.2";
 static const char *DESCRIPTION    = "URL finder for HbbTV";
 static const char *MAINMENUENTRY  = "HbbTV URLs";
 

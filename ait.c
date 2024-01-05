@@ -14,7 +14,7 @@
 #include <libsi/section.h>
 #include <libsi/descriptor.h>
 
-#define PMT_SCAN_IDLE     60 //300    // seconds
+#define PMT_SCAN_IDLE     300    // seconds
 
 #ifdef DEBUG
 #       define DSYSLOG(x...)    dsyslog(x);
@@ -176,6 +176,7 @@ void cAitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
 {
    cMutexLock MutexLock(&mutex);
    int now = time(NULL);
+   static int count;
    
    if (Pid == 0x00 && Tid == SI::TableIdPAT) {
       if (!pmtNextCheck || now > pmtNextCheck)
@@ -310,15 +311,24 @@ void cAitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                }
             }
          }
+         count++;
       }
    }
    else if (Tid == SI::TableIdAIT && Source() && Transponder())
    { 
       cHbbtvURLs *hbbtvURLs = (cHbbtvURLs *)cHbbtvURLs::HbbtvURLs();
-      
+      count = 0;
+
       DSYSLOG("[hbbtv] AIT Pid 0x%04x found \n",Pid );
       cAIT AIT(hbbtvURLs, Data, Pid);
       Del(Pid, SI::TableIdAIT);
       pmtNextCheck = now + PMT_SCAN_IDLE;
+   }
+
+   if (count > 1) //prevent flood if no AIT table in stream
+   {
+      DSYSLOG("[hbbtv] Incorrect Tables! No AIT Table found\n");
+      pmtNextCheck = now + PMT_SCAN_IDLE;
+      count = 0;
    }
 }
