@@ -12,10 +12,10 @@
 #include "hbbtvmenu.h"
 #include "status.h"
 
-static const char *VERSION        = "0.3.2";
+static const char *VERSION        = "0.4.0";
 static const char *DESCRIPTION    = "URL finder for HbbTV";
 static const char *MAINMENUENTRY  = "HbbTV URLs";
-
+char *BROWSER;
 
 cHbbtvDeviceStatus *HbbtvDeviceStatus;
 
@@ -27,6 +27,7 @@ class cPluginHbbtv : public cPlugin
       virtual ~cPluginHbbtv();
       virtual const char *Version(void) { return VERSION; }
       virtual const char *Description(void) { return DESCRIPTION; }
+      virtual bool ProcessArgs(int, char *[]);
       virtual bool Start(void);
       virtual void Stop(void);
       virtual const char *MainMenuEntry(void) { return MAINMENUENTRY; }
@@ -47,6 +48,28 @@ cPluginHbbtv::~cPluginHbbtv()
    // Clean up after yourself!
 }
 
+bool cPluginHbbtv::ProcessArgs(int args, char *argv[])
+{
+   for (;;)
+   {
+      switch (getopt(args, argv, "b:"))
+      {
+      case 'b': // set browser
+         BROWSER = optarg;
+         continue;
+      case EOF:
+         break;
+      case ':':
+         esyslog("[hbbtv]: missing argument for option '%c'\n", optopt);
+         return false;
+      default:
+         esyslog("[hbbtv]: unknown option '%c'\n", optopt);
+         return false;
+      }
+      break;
+   }
+   return true;
+}
 
 bool cPluginHbbtv::Start(void)
 {

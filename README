@@ -19,3 +19,8 @@ URL finder for HbbTV
 Use the vdr-plugin-dsmcc for receive carousel objects (https://github.com/ua0lnj/vdr-plugin-dsmcc).
 For browser as example, use chromium and hbbtv plugin (https://github.com/karl-rousseau/HybridTvViewer).
 
+Command line arguments
+----------------------
+
+-b browser
+  set browser of browser's script, example "/usr/bin/chromium-brouser"

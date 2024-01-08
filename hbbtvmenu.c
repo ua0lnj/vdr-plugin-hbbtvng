@@ -14,14 +14,14 @@
 #include <string>
 #include <cstring>
 
-#define BROWSER "/usr/bin/youtube"
-
 #ifdef DEBUG
 #       define DSYSLOG(x...)    dsyslog(x);
 #else
 #       define DSYSLOG(x...)
 #endif
 using namespace std;
+
+extern char *BROWSER;
 
 static const char *CtrlCodes[8] =
 {  "Autostart",
