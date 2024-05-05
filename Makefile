@@ -46,12 +46,13 @@ PACKAGE = vdr-$(ARCHIVE)
 SOFILE = libvdr-$(PLUGIN).so
 
 ### Includes and Defines (add further entries here):
+-include $(VDRDIR)/Make.config
 
 INCLUDES +=
 
 #DEFINES += -DDEBUG
 
-DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"'
+DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DCACHEDIR=\"$(CACHEDIR)\"
 
 ### The object files (add further files here):
 

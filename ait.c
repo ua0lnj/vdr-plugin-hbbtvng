@@ -22,7 +22,7 @@
 #       define DSYSLOG(x...)
 #endif
 
-const char *carousel_dir = "file:///var/cache/vdr/dsmcc/%s/";
+const char *carousel_dir = "file://%s/dsmcc/%s/";
 // --- cAIT ------------------------------------------------------------
 
 class cAIT : public SI::AIT
@@ -135,7 +135,7 @@ cAIT::cAIT(cHbbtvURLs *hbbtvURLs, const u_char *Data, u_short Pid)
            LOCK_CHANNELS_READ
            cString base = Channels->GetByNumber(HbbtvDeviceStatus->GetDevice()->CurrentChannel())->GetChannelID().ToString();
            //add dsmcc plugin's cache directory with channel id to url
-           sprintf (URLBaseBuffer, carousel_dir, (const char*)base);
+           sprintf (URLBaseBuffer, carousel_dir, CACHEDIR, (const char*)base);
            DSYSLOG("   [hbbtv] Carousel file: %s%s\n", URLBaseBuffer, URLLocBuffer);
          }
       }
