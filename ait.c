@@ -284,6 +284,7 @@ void cAitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                         DSYSLOG("[hbbtv] -----------SI::CarouselIdentifierDescriptorTag Len %d Pid 0x%04x ---------------", d->getLength(), stream.getPid());
                         SI::CarouselIdentifierDescriptor *cr = (SI::CarouselIdentifierDescriptor *) d;
                         DSYSLOG("   [hbbtv] SI::CarouselIdentifierDescriptor CarouselId=0x%04x FormatId=0x%04x\n", cr->getCarouselId(), cr->getFormatId());
+                        (void) cr;
                         break;
                      }
                      default:
@@ -301,6 +302,7 @@ void cAitFilter::Process(u_short Pid, u_char Tid, const u_char *Data, int Length
                         DSYSLOG("[hbbtv] -----------SI::StreamIdentifierDescriptorTag Len %d Pid 0x%04x ---------------", d->getLength(), stream.getPid());
                         SI::StreamIdentifierDescriptor *st = (SI::StreamIdentifierDescriptor *) d;
                         DSYSLOG("   [hbbtv] SI::StreamIdentifierDescriptor ComponentTag=0x%04x\n", st->getComponentTag());
+                        (void) st;
                         break;
                      }
                      default:

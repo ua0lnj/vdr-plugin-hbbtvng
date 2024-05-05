@@ -23,6 +23,7 @@ using namespace std;
 
 extern char *BROWSER;
 
+#ifdef DEBUG
 static const char *CtrlCodes[8] =
 {  "Autostart",
    "Present",
@@ -33,7 +34,7 @@ static const char *CtrlCodes[8] =
    "Disabled",
    "Playback_autostart"
 };
-
+#endif
 
 cHbbtvMenu::cHbbtvMenu(const char *title, int c0, int c1, int c2, int c3, int c4)
 :cOsdMenu(title, 4, 3, 2, 13, c4)
