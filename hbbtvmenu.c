@@ -79,8 +79,6 @@ eOSState cHbbtvMenu::ProcessKey(eKeys Key)
                         cHbbtvURL *url = hbbtvURLs->Get(Current()-1);
                         if (url) 
                         {
-                           DSYSLOG("Menuitem: %d %s", Current(), *cString::sprintf("DISPLAY=:0 %s %s%s", BROWSER, *url->UrlBase(),  *url->UrlLoc()));
-
                            struct sPlayerArgs {
                                string mMenuEntry;
                                string mPlayerCommand;
@@ -91,16 +89,19 @@ eOSState cHbbtvMenu::ProcessKey(eKeys Key)
                            };
 
                            sPlayerArgs pa;
+                           string disp = getenv("DISPLAY");
+
+                           DSYSLOG("Menuitem: %d %s", Current(), *cString::sprintf("DISPLAY=%s %s %s%s", disp.c_str(), BROWSER, *url->UrlBase(),  *url->UrlLoc()));
 
                            pa.mMenuEntry = "hbbtv browser";
-                           pa.mPlayerCommand = *cString::sprintf("DISPLAY=:0 %s %s%s", BROWSER, *url->UrlBase(),  *url->UrlLoc());
+                           pa.mPlayerCommand = *cString::sprintf("DISPLAY=%s %s %s%s", disp.c_str(), BROWSER, *url->UrlBase(),  *url->UrlLoc());
                            pa.mPlayMode = pmExtern_THIS_SHOULD_BE_AVOIDED;
                            pa.mSlaveMode = false;
                            pa.mDeactivateRemotes = true;
                            pa.mBlockMenu = false;
 
                            if (!cPluginManager::CallFirstService("Run External", &pa)) {
-                               SystemExec(*cString::sprintf("DISPLAY=:0 %s %s%s", BROWSER, *url->UrlBase(),  *url->UrlLoc()), true);
+                               SystemExec(*cString::sprintf("DISPLAY=%s %s %s%s", disp.c_str(), BROWSER, *url->UrlBase(),  *url->UrlLoc()), true);
                            }
                         }
                         return osEnd;

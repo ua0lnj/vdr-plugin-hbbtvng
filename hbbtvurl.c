@@ -64,7 +64,7 @@ bool cHbbtvURLs::AddSortedUniqe(cHbbtvURL *newUrl)
    if (!url)
    {
       hbbtvURLs.Add(newUrl);
-      Skins.Message(mtInfo, tr("Found HbbTV URL!"), 5);
+      Skins.Message(mtInfo, tr("Found HbbTV URL!"), 3);
       return true;
    }
    
