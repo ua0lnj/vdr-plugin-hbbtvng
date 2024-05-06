@@ -52,6 +52,8 @@ INCLUDES +=
 
 #DEFINES += -DDEBUG
 
+CACHEDIR ?= /var/cache/vdr
+
 DEFINES += -DPLUGIN_NAME_I18N='"$(PLUGIN)"' -DCACHEDIR=\"$(CACHEDIR)\"
 
 ### The object files (add further files here):
